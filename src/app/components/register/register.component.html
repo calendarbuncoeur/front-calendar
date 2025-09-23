@@ -1,0 +1,34 @@
+<div class="container mx-auto p-4">
+  <div class="bg-white rounded-xl shadow-lg p-6 max-w-md mx-auto">
+    <h1 class="text-2xl font-bold mb-4 text-center">Register for Event</h1>
+    <form [formGroup]="registrationForm()" (ngSubmit)="onSubmit()">
+      <div class="mb-4">
+        <label for="firstName" class="block text-gray-700 font-medium">First Name</label>
+        <input id="firstName" type="text" formControlName="firstName" class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        @if (registrationForm().get('firstName')?.invalid && registrationForm().get('firstName')?.touched) {
+          <div class="text-red-500 text-sm mt-1">First Name is required.</div>
+        }
+      </div>
+      <div class="mb-4">
+        <label for="lastName" class="block text-gray-700 font-medium">Last Name</label>
+        <input id="lastName" type="text" formControlName="lastName" class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        @if (registrationForm().get('lastName')?.invalid && registrationForm().get('lastName')?.touched) {
+          <div class="text-red-500 text-sm mt-1">Last Name is required.</div>
+        }
+      </div>
+      <div class="mb-4">
+        <label for="email" class="block text-gray-700 font-medium">Email</label>
+        <input id="email" type="email" formControlName="email" class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        @if (registrationForm().get('email')?.invalid && registrationForm().get('email')?.touched) {
+          <div class="text-red-500 text-sm mt-1">Valid email is required.</div>
+        }
+      </div>
+      <button type="submit" [disabled]="registrationForm().invalid" [class.bg-gray-400]="registrationForm().invalid" class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-600 transition-colors">
+        Submit Registration
+      </button>
+      @if (message()) {
+        <p class="mt-4 text-center font-semibold" [class.text-green-500]="success()" [class.text-red-500]="!success()">{{ message() }}</p>
+      }
+    </form>
+  </div>
+</div>
