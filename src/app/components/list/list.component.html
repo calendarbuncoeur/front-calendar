@@ -1,6 +1,18 @@
 <div class="container mx-auto p-4">
-  <h1 class="text-3xl font-bold mb-6 text-center text-gray-800">Événements à venir</h1>
-  @if (events().length === 0) {
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-center text-gray-800">Événements à venir</h1>
+
+    <!-- Bouton pour basculer entre liste et calendrier -->
+    <button
+      (click)="toggleDisplayMode()"
+      class="bg-gray-500 text-white px-4 py-2 rounded-full font-bold shadow-md hover:bg-gray-600 transition-colors"
+    >
+      {{ displayMode() === 'list' ? 'Vue Calendrier' : 'Vue Liste' }}
+    </button>
+  </div>
+
+  <!-- Vue Liste -->
+  @if (displayMode() === 'list') { @if (events().length === 0) {
   <div class="text-center text-gray-500">
     <p>Pas d'événements à venir.</p>
   </div>
@@ -17,14 +29,135 @@
       Date fin : {{ event.end_date | date : 'd MMMM y à HH:mm' : 'fr-FR' }}
     </p>
     <div class="mt-4 flex justify-between items-center">
-      <p class="text-sm text-gray-600">Slots: {{ event.available_slots }}</p>
+      <p class="text-sm text-gray-600">Places disponibles : {{ event.available_slots }}</p>
       <a
         [routerLink]="['/register', event.id]"
         class="bg-blue-500 text-white px-4 py-2 rounded-full font-bold shadow-md hover:bg-blue-600 transition-colors"
       >
-        Register
+        S'inscrire
       </a>
     </div>
   </div>
-  } }
+  } } }
+
+  <!-- Vue Calendrier -->
+  @if (displayMode() === 'calendar') {
+  <!-- En-tête du calendrier -->
+  <div class="row text-center mb-4">
+    <div class="col-md-4">
+      <div class="btn-group">
+        <button
+          class="btn btn-primary"
+          mwlCalendarPreviousView
+          [view]="view"
+          [(viewDate)]="viewDate"
+          (viewDateChange)="closeOpenMonthViewDay()"
+        >
+          Précédent
+        </button>
+        <button class="btn btn-outline-secondary" mwlCalendarToday [(viewDate)]="viewDate">
+          Aujourd'hui
+        </button>
+        <button
+          class="btn btn-primary"
+          mwlCalendarNextView
+          [view]="view"
+          [(viewDate)]="viewDate"
+          (viewDateChange)="closeOpenMonthViewDay()"
+        >
+          Suivant
+        </button>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <h3>{{ viewDate | calendarDate : view + 'ViewTitle' : 'fr' }}</h3>
+    </div>
+    <div class="col-md-4">
+      <div class="btn-group">
+        <button
+          class="btn btn-primary"
+          (click)="setView(CalendarView.Month)"
+          [class.active]="view === CalendarView.Month"
+        >
+          Mois
+        </button>
+        <button
+          class="btn btn-primary"
+          (click)="setView(CalendarView.Week)"
+          [class.active]="view === CalendarView.Week"
+        >
+          Semaine
+        </button>
+        <button
+          class="btn btn-primary"
+          (click)="setView(CalendarView.Day)"
+          [class.active]="view === CalendarView.Day"
+        >
+          Jour
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Vues du calendrier -->
+  <div class="calendar-container">
+    @switch (view) { @case (CalendarView.Month) {
+    <mwl-calendar-month-view
+      [viewDate]="viewDate"
+      [events]="calendarEvents()"
+      [refresh]="refresh"
+      [activeDayIsOpen]="activeDayIsOpen"
+      (dayClicked)="dayClicked($event.day)"
+      (eventClicked)="handleEvent('Cliqué', $event.event)"
+    />
+    } @case (CalendarView.Week) {
+    <mwl-calendar-week-view
+      [viewDate]="viewDate"
+      [events]="calendarEvents()"
+      [refresh]="refresh"
+      (eventClicked)="handleEvent('Cliqué', $event.event)"
+    />
+    } @case (CalendarView.Day) {
+    <mwl-calendar-day-view
+      [viewDate]="viewDate"
+      [events]="calendarEvents()"
+      [refresh]="refresh"
+      (eventClicked)="handleEvent('Cliqué', $event.event)"
+    />
+    } }
+  </div>
+  }
 </div>
+
+<!-- Modal pour afficher les détails de l'événement -->
+<ng-template #modalContent let-close="close">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ modalData?.event?.title }}</h5>
+    <button type="button" class="btn-close" (click)="close()" aria-label="Fermer">
+    </button>
+  </div>
+  <div class="modal-body">
+    <div class="mb-3">
+      <strong>Description :</strong>
+      <p>{{ modalData?.event?.meta?.description }}</p>
+    </div>
+    <div class="mb-3">
+      <strong>Date de début :</strong>
+      <p>{{ modalData?.event?.start | date : 'd MMMM y à HH:mm' : 'fr-FR' }}</p>
+    </div>
+    <div class="mb-3">
+      <strong>Date de fin :</strong>
+      <p>{{ modalData?.event?.end | date : 'd MMMM y à HH:mm' : 'fr-FR' }}</p>
+    </div>
+    <div class="mb-3">
+      <strong>Places disponibles :</strong>
+      <p>{{ modalData?.event?.meta?.availableSlots }}</p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <a [routerLink]="['/register', modalData?.event?.id]" class="btn btn-primary" (click)="close()">
+      S'inscrire
+    </a>
+    <button type="button" class="btn btn-secondary" (click)="close()">Fermer</button>
+  </div>
+</ng-template>
