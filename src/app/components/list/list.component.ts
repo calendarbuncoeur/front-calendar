@@ -8,8 +8,8 @@ import {
   ViewChild,
   TemplateRef,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { CommonModule, NgIf } from '@angular/common';
+import { RouterLink, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject } from 'rxjs';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -27,26 +27,8 @@ import {
   DateAdapter,
 } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
-import { startOfDay, endOfDay, isSameDay, isSameMonth } from 'date-fns';
-import { ApiService } from '../../service/api';
-
-export interface Event {
-    id: number;
-    uuid: string;
-    name: string;
-    description: string;
-    start_date: string;
-    end_date: string;
-    available_slots: number;
-    registrations: Registration[];
-}
-
-export interface Registration {
-    uuid: string;
-    first_name: string;
-    last_name: string;
-    email: string;
-}
+import { isSameDay, isSameMonth } from 'date-fns';
+import { Event } from '../../models/event.model';
 
 const colors = {
   blue: {
@@ -78,18 +60,16 @@ const colors = {
     CalendarDayViewComponent,
     CalendarDatePipe,
   ],
-  providers: [
-    provideCalendar({ provide: DateAdapter, useFactory: adapterFactory }),
-  ],
+  providers: [provideCalendar({ provide: DateAdapter, useFactory: adapterFactory })],
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',
 })
 export class ListComponent {
   @ViewChild('modalContent', { static: true }) modalContent!: TemplateRef<any>;
 
-  private apiService = inject(ApiService);
   private destroyRef = inject(DestroyRef);
   private modal = inject(NgbModal);
+  private route = inject(ActivatedRoute);
 
   public events = signal<Event[]>([]);
   public calendarEvents = signal<CalendarEvent[]>([]);
@@ -111,18 +91,13 @@ export class ListComponent {
   displayMode = signal<'list' | 'calendar'>('list');
 
   constructor() {
-    this.apiService
-      .getEvents()
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: (data: Event[]) => {
-          this.events.set(data);
-          this.convertToCalendarEvents(data);
-        },
-        error: (error) => {
-          console.error('Erreur lors de la récupération des événements :', error);
-        },
-      });
+    this.route.data.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
+      next: (data) => {
+        const events = data['events'] as Event[];
+        this.events.set(events);
+        this.convertToCalendarEvents(events);
+      },
+    });
   }
 
   private convertToCalendarEvents(events: Event[]): void {
@@ -136,7 +111,7 @@ export class ListComponent {
         description: event.description,
         availableSlots: event.available_slots,
         uuid: event.uuid,
-        registrations: event.registrations
+        registrations: event.registrations,
       },
       resizable: {
         beforeStart: false,

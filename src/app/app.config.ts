@@ -1,21 +1,16 @@
-import {
-  ApplicationConfig,
-  provideBrowserGlobalErrorListeners,
-  provideZoneChangeDetection,
-} from '@angular/core';
+import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
-import localeFr from '@angular/common/locales/fr';
-import { routes } from './app.routes';
 import { provideHttpClient } from '@angular/common/http';
-import { registerLocaleData } from '@angular/common';
 
-registerLocaleData(localeFr);
+import { routes } from './app.routes';
+import { registerLocaleData } from '@angular/common';
+import localeFr from '@angular/common/locales/fr';
+
+registerLocaleData(localeFr, 'fr');
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    provideBrowserGlobalErrorListeners(),
-    provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(),
-  ],
+    provideHttpClient()
+  ]
 };
