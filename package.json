@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "ng build",
+    "build": "yarn build:css && ng build",
+    "build:css": "tailwindcss -i ./src/styles.scss -o ./src/output.css",
     "ng": "ng",
-    "start": "ng serve",
+    "start": "yarn watch:css & ng serve",
     "test": "ng test",
-    "watch": "ng build --watch --configuration development"
+    "watch": "ng build --watch --configuration development",
+    "watch:css": "tailwindcss -i ./src/styles.scss -o ./src/output.css --watch"
   },
   "prettier": {
     "printWidth": 100,

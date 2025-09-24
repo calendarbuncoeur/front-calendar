@@ -1,5 +1,5 @@
 <div class="container mx-auto p-4">
-  <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+  <div class="flex flex-col sm:flex-row justify-center sm:justify-between items-center gap-4 mb-6">
     <h1 class="text-3xl font-bold text-gray-800">Événements à venir</h1>
 
     <!-- Bouton pour basculer entre liste et calendrier -->
@@ -33,7 +33,7 @@
       <p class="text-sm text-gray-600 mt-2">Places disponibles : {{ event.available_slots }}</p>
     </mat-card-content>
     <mat-card-actions align="end">
-      <a mat-raised-button color="primary" [routerLink]="['/register', event.id]"> S'inscrire </a>
+      <a mat-raised-button color="primary" [routerLink]="['/register', event.uuid]">S'inscrire</a>
     </mat-card-actions>
   </mat-card>
   } } }

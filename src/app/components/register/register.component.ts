@@ -1,6 +1,6 @@
 import { Component, inject, signal, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { FormBuilder, Validators, ReactiveFormsModule, FormGroup, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
@@ -9,6 +9,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+
+// Validateur personnalisé pour s'assurer qu'au moins un des deux champs est rempli
+export const atLeastOne = (fields: string[]): ValidatorFn => {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const atLeastOneFilled = fields.some(field => !!control.get(field)?.value);
+    return atLeastOneFilled ? null : { atLeastOne: true };
+  };
+};
 
 @Component({
   selector: 'app-register',
@@ -32,23 +40,25 @@ export class RegisterComponent {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', Validators.email],
-      phoneNumber: ['', Validators.required],
-    })
+      phoneNumber: [''],
+    }, { validators: atLeastOne(['email', 'phoneNumber']) })
   );
   public message = signal<string>('');
   public success = signal<boolean>(false);
 
-  public eventId: string | null = null;
+  public eventUuid: string | null = null;
 
   constructor() {
-    this.eventId = this.route.snapshot.paramMap.get('eventId');
+    // On utilise 'eventUuid' pour correspondre à la route
+    this.eventUuid = this.route.snapshot.paramMap.get('eventUuid');
   }
 
   onSubmit(): void {
     if (this.registrationForm().valid) {
       const data = {
         ...this.registrationForm().value,
-        eventId: this.eventId,
+        // Le backend attend 'eventId', qui est l'UUID ici
+        eventId: this.eventUuid,
       };
 
       this.apiService
