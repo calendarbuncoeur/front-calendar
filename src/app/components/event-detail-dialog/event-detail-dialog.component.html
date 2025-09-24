@@ -1,0 +1,13 @@
+<h2 mat-dialog-title>{{ data.title }}</h2>
+<mat-dialog-content class="mat-typography">
+  <p><strong>Description :</strong> {{ data.meta.description }}</p>
+  <p><strong>Date de début :</strong> {{ data.start | date : 'd MMMM y à HH:mm' : '' : 'fr' }}</p>
+  <p><strong>Date de fin :</strong> {{ data.end | date : 'd MMMM y à HH:mm' : '' : 'fr' }}</p>
+  <p><strong>Places disponibles :</strong> {{ data.meta.availableSlots }}</p>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()">Fermer</button>
+  <a mat-raised-button color="primary" [routerLink]="['/register', data.id]" (click)="close()">
+    S'inscrire
+  </a>
+</mat-dialog-actions>

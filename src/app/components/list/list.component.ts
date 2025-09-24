@@ -4,15 +4,13 @@ import {
   signal,
   ChangeDetectionStrategy,
   DestroyRef,
-  OnInit,
-  ViewChild,
-  TemplateRef,
 } from '@angular/core';
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Subject } from 'rxjs';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { MatDialog } from '@angular/material/dialog';
+import { EventDetailDialogComponent } from '../event-detail-dialog/event-detail-dialog.component';
 import {
   CalendarEvent,
   CalendarView,
@@ -28,6 +26,11 @@ import {
 } from 'angular-calendar';
 import { adapterFactory } from 'angular-calendar/date-adapters/date-fns';
 import { isSameDay, isSameMonth } from 'date-fns';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+
 import { Event } from '../../models/event.model';
 
 const colors = {
@@ -52,6 +55,10 @@ const colors = {
   imports: [
     CommonModule,
     RouterLink,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatButtonToggleModule,
     CalendarPreviousViewDirective,
     CalendarTodayDirective,
     CalendarNextViewDirective,
@@ -65,11 +72,9 @@ const colors = {
   styleUrl: './list.component.scss',
 })
 export class ListComponent {
-  @ViewChild('modalContent', { static: true }) modalContent!: TemplateRef<any>;
-
   private destroyRef = inject(DestroyRef);
-  private modal = inject(NgbModal);
   private route = inject(ActivatedRoute);
+  public dialog = inject(MatDialog);
 
   public events = signal<Event[]>([]);
   public calendarEvents = signal<CalendarEvent[]>([]);
@@ -80,12 +85,6 @@ export class ListComponent {
   viewDate: Date = new Date();
   activeDayIsOpen: boolean = false;
   refresh = new Subject<void>();
-
-  // Propriétés pour la modal
-  modalData?: {
-    action: string;
-    event: CalendarEvent;
-  };
 
   // Mode d'affichage : 'list' ou 'calendar'
   displayMode = signal<'list' | 'calendar'>('list');
@@ -145,8 +144,10 @@ export class ListComponent {
   }
 
   handleEvent(action: string, event: CalendarEvent): void {
-    this.modalData = { event, action };
-    this.modal.open(this.modalContent, { size: 'lg' });
+    this.dialog.open(EventDetailDialogComponent, {
+      width: '500px',
+      data: event,
+    });
   }
 
   setView(view: CalendarView): void {

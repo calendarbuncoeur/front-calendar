@@ -1,29 +1,26 @@
-<div class="container mx-auto p-4">
+<div class="p-4 flex items-center justify-center min-h-[calc(100vh-200px)]">
   <!-- Affiche le formulaire de mot de passe si non authentifié -->
   @if (!isAuthenticated()) {
-  <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 mt-10">
+  <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-6 sm:p-8">
     <h1 class="text-2xl font-bold mb-6 text-center">Accès Administrateur</h1>
     <form (ngSubmit)="checkPassword()">
       <div class="mb-4">
-        <label for="password" class="block text-gray-700 font-medium">Mot de passe</label>
-        <input
-          id="password"
-          type="password"
-          [ngModel]="password()"
-          (ngModelChange)="password.set($event)"
-          name="password"
-          class="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          required
-        />
+        <mat-form-field class="w-full" appearance="fill">
+          <mat-label>Mot de passe</mat-label>
+          <input
+            matInput
+            type="password"
+            [ngModel]="password()"
+            (ngModelChange)="password.set($event)"
+            name="password"
+            required
+          />
+        </mat-form-field>
       </div>
 
-      <button
-        type="submit"
-        [disabled]="isLoading()"
-        class="w-full bg-blue-500 text-white font-bold py-2 px-4 rounded-md shadow-md hover:bg-blue-600 transition-colors disabled:bg-gray-400"
-      >
+      <button type="submit" mat-raised-button color="primary" [disabled]="isLoading()" class="w-full">
         @if (isLoading()) {
-        <span>Vérification...</span>
+        <mat-spinner [diameter]="24" class="inline-block"></mat-spinner>
         } @else {
         <span>Valider</span>
         }
@@ -38,21 +35,55 @@
 
   <!-- Affiche la liste des inscrits si authentifié -->
   @if (isAuthenticated()) {
-  <div class="bg-white rounded-xl shadow-lg p-6">
-    <h1 class="text-2xl font-bold mb-4">Liste des inscriptions</h1>
-    @for (reg of registrations(); track reg.created_at) {
-    <div class="border-b py-4 last:border-b-0">
-      <p class="font-semibold text-lg">{{ reg.first_name }} {{ reg.last_name }}</p>
-      <p class="text-sm text-gray-600">
-        Contact : {{ reg.email || reg.phone_number }}
-      </p>
-      <p class="text-sm text-gray-500 mt-1">
-        Inscrit à l'événement "<strong>{{ reg.event.name }}</strong>" le {{ reg.created_at | date : 'dd/MM/yyyy à HH:mm' : '' : 'fr' }}
-      </p>
-    </div>
-    } @empty {
-    <p>Aucune inscription pour le moment.</p>
-    }
+  <div class="w-full max-w-4xl">
+    <h1 class="text-3xl font-bold mb-6 text-center">Tableau de bord Administrateur</h1>
+    <mat-accordion multi="true">
+      @for (eventGroup of registrations(); track eventGroup.eventId) {
+      <mat-expansion-panel class="mb-4 shadow-lg rounded-xl">
+        <mat-expansion-panel-header class="py-3">
+          <mat-panel-title class="flex justify-between items-center w-full">
+            <div>
+              <h2 class="text-xl font-semibold text-blue-600">{{ eventGroup.eventName }}</h2>
+              <p class="text-sm text-gray-500">
+                {{ eventGroup.eventDate | date : 'd MMMM y' : '' : 'fr' }}
+              </p>
+            </div>
+            <div class="text-right">
+              <span class="font-bold text-lg">{{ eventGroup.registrations.length }}</span>
+              <span class="text-sm text-gray-600"> inscrits</span>
+              <p class="text-xs text-gray-500">
+                ({{ eventGroup.availableSlots }} places restantes)
+              </p>
+            </div>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <!-- Contenu du panneau (tableau des inscrits) -->
+        <div class="overflow-x-auto">
+          <table mat-table [dataSource]="eventGroup.registrations" class="w-full">
+            <!-- Colonnes du tableau -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef> Nom </th>
+              <td mat-cell *matCellDef="let reg"> {{reg.first_name}} {{reg.last_name}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="contact">
+              <th mat-header-cell *matHeaderCellDef> Contact </th>
+              <td mat-cell *matCellDef="let reg"> {{reg.email || reg.phone_number}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="date">
+              <th mat-header-cell *matHeaderCellDef> Date d'inscription </th>
+              <td mat-cell *matCellDef="let reg"> {{reg.created_at | date:'dd/MM/yy HH:mm':'':'fr'}} </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="['name', 'contact', 'date']"></tr>
+            <tr mat-row *matRowDef="let row; columns: ['name', 'contact', 'date'];"></tr>
+          </table>
+        </div>
+      </mat-expansion-panel>
+      }
+    </mat-accordion>
   </div>
   }
 </div>

@@ -167,6 +167,13 @@
     ora "8.2.0"
     rxjs "7.8.2"
 
+"@angular/animations@^20.3.1":
+  version "20.3.1"
+  resolved "https://registry.yarnpkg.com/@angular/animations/-/animations-20.3.1.tgz#dd37a43121f244b3999b1a366af94f99f7be107f"
+  integrity sha512-mexSwaikVE2s+GDhB9fuagEvxbnKHWsqLlO7/R2nY9tTUxBO3drWe3p0D5GxG/EsEyzZU+86ED867q/JmAiVvw==
+  dependencies:
+    tslib "^2.3.0"
+
 "@angular/build@^20.3.2":
   version "20.3.2"
   resolved "https://registry.yarnpkg.com/@angular/build/-/build-20.3.2.tgz#59fec634d0335cd3dc7c345e41f79c000cc09ffa"
@@ -200,6 +207,14 @@
     watchpack "2.4.4"
   optionalDependencies:
     lmdb "3.4.2"
+
+"@angular/cdk@20.2.4":
+  version "20.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/cdk/-/cdk-20.2.4.tgz#45166da4059ac134ad56d0aebab39d7c002db722"
+  integrity sha512-5UzrN854pnQH+Qw6XZRxx2zWkcOxKrzWPLXe+gHFxFhxWUZfJKGcTJeAj8bnmyb+C3lqBbGpoNQPQ8pFXQGEaQ==
+  dependencies:
+    parse5 "^8.0.0"
+    tslib "^2.3.0"
 
 "@angular/cli@^20.3.2":
   version "20.3.2"
@@ -276,6 +291,13 @@
     "@types/babel__core" "7.20.5"
     tinyglobby "^0.2.12"
     yargs "^18.0.0"
+
+"@angular/material@20.2.4":
+  version "20.2.4"
+  resolved "https://registry.yarnpkg.com/@angular/material/-/material-20.2.4.tgz#601897f204ce9032c4a3f16049ca72222ab2fa8d"
+  integrity sha512-B1XUOL9TbBDQZpH3j2C6hEpwdokvvmoeaOI7aMTpXrNzomyXHTWZWrMybq30trB7sE7cNze1DQRiOuDXsLgnTw==
+  dependencies:
+    tslib "^2.3.0"
 
 "@angular/platform-browser@^20.3.0":
   version "20.3.1"
@@ -1196,13 +1218,6 @@
     "@emnapi/runtime" "^1.5.0"
     "@tybys/wasm-util" "^0.10.1"
 
-"@ng-bootstrap/ng-bootstrap@^19.0.1":
-  version "19.0.1"
-  resolved "https://registry.yarnpkg.com/@ng-bootstrap/ng-bootstrap/-/ng-bootstrap-19.0.1.tgz#a9d962f590012e0a6f731b5c5069c70c6ae8cb7f"
-  integrity sha512-1lErAkwh0F+gWkzpiddViY4GfA9LVXkwLpgBsV9Mb3IC0zo6WNkY8WxCC+LqajirBTu20DCkZSqeRzrwaVLpZw==
-  dependencies:
-    tslib "^2.3.0"
-
 "@npmcli/agent@^3.0.0":
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/@npmcli/agent/-/agent-3.0.0.tgz#1685b1fbd4a1b7bb4f930cbb68ce801edfe7aa44"
@@ -1388,11 +1403,6 @@
   version "0.11.0"
   resolved "https://registry.yarnpkg.com/@pkgjs/parseargs/-/parseargs-0.11.0.tgz#a77ea742fab25775145434eb1d2328cf5013ac33"
   integrity sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==
-
-"@popperjs/core@^2.11.8":
-  version "2.11.8"
-  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.8.tgz#6b79032e760a0899cd4204710beede972a3a185f"
-  integrity sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==
 
 "@rolldown/binding-android-arm64@1.0.0-beta.32":
   version "1.0.0-beta.32"
@@ -2058,11 +2068,6 @@ boolbase@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/boolbase/-/boolbase-1.0.0.tgz#68dff5fbe60c51eb37725ea9e3ed310dcc1e776e"
   integrity sha512-JZOSA7Mo9sNGB8+UjSgzdLtokWAky1zbztM3WRLCbZ70/3cTANmQmOdR7y2g+J0e2WXywy1yS468tY+IruqEww==
-
-bootstrap@^5.3.8:
-  version "5.3.8"
-  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-5.3.8.tgz#6401a10057a22752d21f4e19055508980656aeed"
-  integrity sha512-HP1SZDqaLDPwsNiqRqi5NcP0SSXciX2s9E+RyqJIIqGo+vJeN5AJVM98CXmW/Wux0nQ5L7jeWUdplCEf0Ee+tg==
 
 brace-expansion@^1.1.7:
   version "1.1.12"

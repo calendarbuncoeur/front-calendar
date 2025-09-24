@@ -2,6 +2,13 @@ import { Component, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../service/api';
+import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTableModule } from '@angular/material/table';
+
 
 // Définition de l'interface pour les données d'inscription que nous attendons
 export interface AdminRegistration {
@@ -11,15 +18,34 @@ export interface AdminRegistration {
   email: string | null;
   phone_number: string | null;
   event: {
+    id: number;
     name: string;
     start_date: string;
+    available_slots: number;
   };
+}
+
+export interface GroupedRegistration {
+  eventId: number;
+  eventName: string;
+  eventDate: string;
+  availableSlots: number;
+  registrations: Omit<AdminRegistration, 'event'>[];
 }
 
 @Component({
   selector: 'app-admin-page',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatExpansionModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatProgressSpinnerModule,
+    MatTableModule,
+  ],
   templateUrl: './admin-page.component.html',
   styleUrls: ['./admin-page.component.scss'],
 })
@@ -30,7 +56,7 @@ export class AdminPageComponent {
   password = signal('');
   isAuthenticated = signal(false);
   errorMessage = signal('');
-  registrations = signal<AdminRegistration[]>([]);
+  registrations = signal<GroupedRegistration[]>([]);
   isLoading = signal(false);
 
   async checkPassword(): Promise<void> {
@@ -45,8 +71,8 @@ export class AdminPageComponent {
 
     try {
       const data = await this.apiService.getAdminRegistrations(this.password());
-      this.registrations.set(data);
       this.isAuthenticated.set(true);
+      this.groupRegistrations(data);
     } catch (error: any) {
       this.errorMessage.set(
         error.status === 401 ? 'Mot de passe incorrect.' : 'Une erreur est survenue.'
@@ -55,5 +81,30 @@ export class AdminPageComponent {
     } finally {
       this.isLoading.set(false);
     }
+  }
+
+  private groupRegistrations(regs: AdminRegistration[]): void {
+    const grouped = regs.reduce((acc, reg) => {
+      const eventId = reg.event.id;
+      if (!acc[eventId]) {
+        acc[eventId] = {
+          eventId: eventId,
+          eventName: reg.event.name,
+          eventDate: reg.event.start_date,
+          availableSlots: reg.event.available_slots,
+          registrations: [],
+        };
+      }
+      acc[eventId].registrations.push({
+        created_at: reg.created_at,
+        first_name: reg.first_name,
+        last_name: reg.last_name,
+        email: reg.email,
+        phone_number: reg.phone_number,
+      });
+      return acc;
+    }, {} as Record<number, GroupedRegistration>);
+
+    this.registrations.set(Object.values(grouped));
   }
 }

@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { ListComponent } from './components/list/list.component';
 import { RegisterComponent } from './components/register/register.component';
 import { eventsResolver } from './resolver/events.resolver';
-import { AdminPageComponent } from './components/admin-page/admin-page.component';
 
 export const routes: Routes = [
   {
@@ -18,7 +17,8 @@ export const routes: Routes = [
   },
   {
     path: 'admin-page',
-    component: AdminPageComponent,
+    loadComponent: () =>
+      import('./components/admin-page/admin-page.component').then((m) => m.AdminPageComponent),
   },
   { path: '**', redirectTo: '' },
 ];

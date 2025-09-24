@@ -11,11 +11,12 @@ import {
 } from '@angular/router';
 import { filter } from 'rxjs';
 import { LoadingComponent } from './components/loading/loading.component';
+import { MatToolbarModule } from '@angular/material/toolbar';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, LoadingComponent, RouterLink],
+  imports: [CommonModule, RouterOutlet, LoadingComponent, RouterLink, MatToolbarModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
