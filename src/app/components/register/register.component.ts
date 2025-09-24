@@ -25,7 +25,8 @@ export class RegisterComponent {
     this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', Validators.email],
+      phoneNumber: ['', Validators.required],
     })
   );
   public message = signal<string>('');
@@ -57,7 +58,7 @@ export class RegisterComponent {
           error: (error) => {
             // Gère l'erreur de conflit (email déjà inscrit)
             if (error.status === 409) {
-              this.message.set('Cet e-mail est déjà inscrit pour cet événement.');
+              this.message.set('Cet e-mail ou numéro de téléphone est déjà inscrit pour cet événement.');
             } else {
               this.message.set(error.error?.error || "Échec de l'inscription. Veuillez réessayer.");
             }
