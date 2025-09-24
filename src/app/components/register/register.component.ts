@@ -49,13 +49,18 @@ export class RegisterComponent {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (response) => {
-            this.message.set(response.message || 'Inscription réussie !');
+            this.message.set(response.message || 'Inscription réussie ! Vous allez être redirigé vers l\'accueil.');
             this.success.set(true);
             this.registrationForm().reset();
             setTimeout(() => this.router.navigate(['/']), 3000);
           },
           error: (error) => {
-            this.message.set(error.error?.error || "Échec de l'inscription. Veuillez réessayer.");
+            // Gère l'erreur de conflit (email déjà inscrit)
+            if (error.status === 409) {
+              this.message.set('Cet e-mail est déjà inscrit pour cet événement.');
+            } else {
+              this.message.set(error.error?.error || "Échec de l'inscription. Veuillez réessayer.");
+            }
             this.success.set(false);
           },
         });
