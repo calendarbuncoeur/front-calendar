@@ -19,7 +19,7 @@ export class ApiService {
 
   /**
    * Registers a new user for a specific event.
-   * @param data The user's registration data (name, email, eventId).
+   * @param data The user's registration data (name, email, eventUuid).
    * @returns An observable with the registration response.
    */
   registerToEvent(data: any): Observable<any> {

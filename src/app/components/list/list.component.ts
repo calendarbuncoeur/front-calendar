@@ -4,10 +4,11 @@ import {
   signal,
   ChangeDetectionStrategy,
   DestroyRef,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDetailDialogComponent } from '../event-detail-dialog/event-detail-dialog.component';
@@ -32,6 +33,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 import { Event } from '../../models/event.model';
+import { ApiService } from '../../service/api';
 
 const colors = {
   blue: {
@@ -71,9 +73,9 @@ const colors = {
   templateUrl: './list.component.html',
   styleUrl: './list.component.scss',
 })
-export class ListComponent {
+export class ListComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
-  private route = inject(ActivatedRoute);
+  private apiService = inject(ApiService);
   public dialog = inject(MatDialog);
 
   public events = signal<Event[]>([]);
@@ -89,14 +91,17 @@ export class ListComponent {
   // Mode d'affichage : 'list' ou 'calendar'
   displayMode = signal<'list' | 'calendar'>('list');
 
-  constructor() {
-    this.route.data.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-      next: (data) => {
-        const events = data['events'] as Event[];
-        this.events.set(events);
-        this.convertToCalendarEvents(events);
-      },
-    });
+  ngOnInit(): void {
+    this.apiService
+      .getEvents()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: (events) => {
+          this.events.set(events);
+          this.convertToCalendarEvents(events);
+        },
+        error: (err) => console.error('Failed to load events', err),
+      });
   }
 
   private convertToCalendarEvents(events: Event[]): void {

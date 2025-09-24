@@ -49,16 +49,19 @@ export class RegisterComponent {
   public eventUuid: string | null = null;
 
   constructor() {
-    // On utilise 'eventUuid' pour correspondre à la route
-    this.eventUuid = this.route.snapshot.paramMap.get('eventUuid');
+    // On s'abonne aux changements de paramètres de la route pour récupérer l'UUID
+    this.route.paramMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
+      // On utilise 'eventUuid' pour correspondre au nom du paramètre dans la route
+      this.eventUuid = params.get('eventUuid');
+    });
   }
 
   onSubmit(): void {
     if (this.registrationForm().valid) {
       const data = {
         ...this.registrationForm().value,
-        // Le backend attend 'eventId', qui est l'UUID ici
-        eventId: this.eventUuid,
+        // On envoie l'UUID de l'événement au backend
+        eventUuid: this.eventUuid,
       };
 
       this.apiService
@@ -66,15 +69,14 @@ export class RegisterComponent {
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe({
           next: (response) => {
-            this.message.set(response.message || 'Inscription réussie ! Vous allez être redirigé vers l\'accueil.');
+            this.message.set(response.message || 'Inscription réussie !');
             this.success.set(true);
             this.registrationForm().reset();
-            setTimeout(() => this.router.navigate(['/']), 3000);
           },
           error: (error) => {
             // Gère l'erreur de conflit (email déjà inscrit)
             if (error.status === 409) {
-              this.message.set('Cet e-mail ou numéro de téléphone est déjà inscrit pour cet événement.');
+              this.message.set("Cet e-mail ou numéro de téléphone est déjà inscrit pour cet événement.");
             } else {
               this.message.set(error.error?.error || "Échec de l'inscription. Veuillez réessayer.");
             }

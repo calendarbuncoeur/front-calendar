@@ -1,8 +1,8 @@
+<!-- Affiche le formulaire de mot de passe si non authentifié -->
+@if (!isAuthenticated()) {
 <div class="p-4 flex items-center justify-center min-h-[calc(100vh-200px)]">
-  <!-- Affiche le formulaire de mot de passe si non authentifié -->
-  @if (!isAuthenticated()) {
-  <div class="max-w-md w-full bg-white rounded-xl shadow-lg p-6 sm:p-8">
-    <h1 class="text-2xl font-bold mb-6 text-center">Accès Administrateur</h1>
+  <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-6 sm:p-8">
+    <h1 class="text-2xl font-bold mb-6 text-center">Accès administrateur</h1>
     <form (ngSubmit)="checkPassword()">
       <div class="mb-4">
         <mat-form-field class="w-full" appearance="fill">
@@ -31,16 +31,17 @@
       }
     </form>
   </div>
-  }
+</div>
+}
 
-  <!-- Affiche la liste des inscrits si authentifié -->
-  @if (isAuthenticated()) {
-  <div class="w-full max-w-4xl">
-    <h1 class="text-3xl font-bold mb-6 text-center">Tableau de bord Administrateur</h1>
-    <mat-accordion multi="true">
+<!-- Affiche la liste des inscrits si authentifié -->
+@if (isAuthenticated()) {
+<div class="w-full max-w-5xl mx-auto">
+  <h1 class="text-3xl font-bold mb-6 text-center">Tableau de bord administrateur</h1>
+  <mat-accordion multi>
       @for (eventGroup of registrations(); track eventGroup.eventId) {
       <mat-expansion-panel class="mb-4 shadow-lg rounded-xl">
-        <mat-expansion-panel-header class="py-3">
+        <mat-expansion-panel-header collapsedHeight="64px" expandedHeight="64px">
           <mat-panel-title class="flex justify-between items-center w-full">
             <div>
               <h2 class="text-xl font-semibold text-blue-600">{{ eventGroup.eventName }}</h2>
@@ -83,7 +84,6 @@
         </div>
       </mat-expansion-panel>
       }
-    </mat-accordion>
-  </div>
-  }
+  </mat-accordion>
 </div>
+}

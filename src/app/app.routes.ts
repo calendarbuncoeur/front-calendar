@@ -12,7 +12,7 @@ export const routes: Routes = [
     },
   },
   {
-    path: 'register/:eventId',
+    path: 'register/:eventUuid',
     component: RegisterComponent,
   },
   {

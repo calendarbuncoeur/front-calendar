@@ -24,9 +24,7 @@
   <mat-card class="mb-4">
     <mat-card-header>
       <mat-card-title>{{ event.name }}</mat-card-title>
-      <mat-card-subtitle>{{
-        event.start_date | date : 'd MMMM y à HH:mm' : '' : 'fr'
-      }}</mat-card-subtitle>
+      <mat-card-subtitle>{{ event.start_date | date : "d MMMM y 'à' HH:mm" : '' : 'fr' }}</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
       <p>{{ event.description }}</p>
