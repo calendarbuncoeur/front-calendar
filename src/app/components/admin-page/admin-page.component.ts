@@ -11,7 +11,17 @@ import { MatTableModule } from '@angular/material/table';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from '../event-dialog/event-dialog.component';
 import { MatIconModule } from '@angular/material/icon';
-import { Event } from '../../models/event.model';
+import { Event, Registration } from '../../models/event.model';
+
+interface AdminViewRegistration extends Registration {
+  id: number;
+  created_at: string;
+  phone_number: string | null;
+}
+
+interface AdminViewEvent extends Omit<Event, 'registrations'> {
+  registrations: AdminViewRegistration[];
+}
 
 @Component({
   selector: 'app-admin-page',
@@ -37,7 +47,7 @@ export class AdminPageComponent implements OnInit {
   password = signal('');
   isAuthenticated = signal(false);
   errorMessage = signal('');
-  events = signal<Event[]>([]);
+  events = signal<AdminViewEvent[]>([]);
   isLoading = signal(false);
   isAuthenticating = signal(true);
 
@@ -49,9 +59,36 @@ export class AdminPageComponent implements OnInit {
     this.isLoading.set(true);
     this.errorMessage.set('');
     try {
-      const events = await this.apiService.getEvents();
-      this.events.set(events);
+      // getAdminRegistrations sert de vérification d'authentification
+      const [eventsFromApi, adminRegistrations] = await Promise.all([
+        this.apiService.getEvents(),
+        this.apiService.getAdminRegistrations(),
+      ]);
+
       this.isAuthenticated.set(true);
+
+      const eventsMap = new Map<number, AdminViewEvent>();
+      for (const event of eventsFromApi) {
+        eventsMap.set(event.id, { ...event, registrations: [] });
+      }
+
+      for (const reg of adminRegistrations) {
+        const event = eventsMap.get(reg.event.id);
+        if (event) {
+          event.registrations.push({
+            id: reg.id,
+            uuid: reg.uuid,
+            created_at: reg.created_at,
+            first_name: reg.first_name,
+            last_name: reg.last_name,
+            email: reg.email || '',
+            phone_number: reg.phone_number,
+          });
+        }
+      }
+
+      this.events.set(Array.from(eventsMap.values()));
+
     } catch (error) {
       this.isAuthenticated.set(false);
     } finally {
@@ -81,7 +118,7 @@ export class AdminPageComponent implements OnInit {
     }
   }
 
-  openEventDialog(event: Event | null = null): void {
+  openEventDialog(event: AdminViewEvent | null = null): void {
     const dialogRef = this.dialog.open(EventDialogComponent, {
       width: '500px',
       data: { event },
@@ -101,7 +138,7 @@ export class AdminPageComponent implements OnInit {
   async createEvent(eventData: Partial<Event>): Promise<void> {
     try {
       const newEvent = await this.apiService.createEvent(eventData);
-      this.events.set([newEvent, ...this.events()]);
+      this.events.update(events => [{ ...newEvent, registrations: [] }, ...events]);
     } catch (error) {
       console.error('Error creating event', error);
     }
@@ -110,12 +147,15 @@ export class AdminPageComponent implements OnInit {
   async updateEvent(uuid: string, eventData: Partial<Event>): Promise<void> {
     try {
       const updatedEvent = await this.apiService.updateEvent(uuid, eventData);
-      const index = this.events().findIndex((e) => e.uuid === uuid);
-      if (index > -1) {
-        const updatedEvents = [...this.events()];
-        updatedEvents[index] = updatedEvent;
-        this.events.set(updatedEvents);
-      }
+      this.events.update(events => {
+        const index = events.findIndex((e) => e.uuid === uuid);
+        if (index > -1) {
+          const newEvents = [...events];
+          newEvents[index] = { ...newEvents[index], ...updatedEvent } as AdminViewEvent;
+          return newEvents;
+        }
+        return events;
+      });
     } catch (error) {
       console.error('Error updating event', error);
     }
@@ -125,19 +165,18 @@ export class AdminPageComponent implements OnInit {
     if (confirm('Êtes-vous sûr de vouloir supprimer cet événement ?')) {
       try {
         await this.apiService.deleteEvent(uuid);
-        this.events.set(this.events().filter((e) => e.uuid !== uuid));
+        this.events.update(events => events.filter((e) => e.uuid !== uuid));
       } catch (error) {
         console.error('Error deleting event', error);
       }
     }
   }
 
-  async deleteRegistration(registrationId: number, eventUuid: string): Promise<void> {
+  async deleteRegistration(uuid: string): Promise<void> {
     if (confirm('Êtes-vous sûr de vouloir supprimer cette inscription ?')) {
       try {
-        await this.apiService.deleteRegistration(registrationId);
-        // Recharger les données pour mettre à jour le nombre de places, etc.
-        this.loadInitialData();
+        await this.apiService.deleteRegistration(uuid);
+        this.loadInitialData(); // Recharger pour mettre à jour les places, etc.
       } catch (error) {
         console.error('Error deleting registration', error);
       }

@@ -81,9 +81,9 @@ export class ApiService {
 
   // --- Méthodes de gestion des inscriptions (Admin) ---
 
-  deleteRegistration(id: number): Promise<unknown> {
+  deleteRegistration(uuid: string): Promise<unknown> {
     return lastValueFrom(
-      this.http.delete(`${this.apiUrl}/admin/registrations/${id}`, { withCredentials: true })
+      this.http.delete(`${this.apiUrl}/admin/registrations/${uuid}`, { withCredentials: true })
     );
   }
 }
