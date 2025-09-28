@@ -1,9 +1,16 @@
+<!-- Affiche un loader pendant la vérification initiale de l'authentification -->
+@if (isAuthenticating()) {
+<div class="p-4 flex items-center justify-center min-h-[calc(100vh-200px)]">
+  <mat-spinner [diameter]="60"></mat-spinner>
+</div>
+}
+
 <!-- Affiche le formulaire de mot de passe si non authentifié -->
-@if (!isAuthenticated()) {
+@if (!isAuthenticating() && !isAuthenticated()) {
 <div class="p-4 flex items-center justify-center min-h-[calc(100vh-200px)]">
   <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-6 sm:p-8">
     <h1 class="text-2xl font-bold mb-6 text-center">Accès administrateur</h1>
-    <form (ngSubmit)="checkPassword()">
+    <form (ngSubmit)="login()">
       <div class="mb-4">
         <mat-form-field class="w-full" appearance="fill">
           <mat-label>Mot de passe</mat-label>
@@ -35,7 +42,7 @@
 }
 
 <!-- Affiche la liste des inscrits si authentifié -->
-@if (isAuthenticated()) {
+@if (!isAuthenticating() && isAuthenticated()) {
 <div class="w-full max-w-5xl mx-auto">
   <h1 class="text-3xl font-bold mb-6 text-center">Tableau de bord administrateur</h1>
   <mat-accordion multi>
