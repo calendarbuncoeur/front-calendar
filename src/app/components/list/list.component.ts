@@ -9,7 +9,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute } from '@angular/router';
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
-import { Subject } from 'rxjs';
+import { firstValueFrom, from, Subject } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { EventDetailDialogComponent } from '../event-detail-dialog/event-detail-dialog.component';
 import {
@@ -92,8 +92,7 @@ export class ListComponent implements OnInit {
   displayMode = signal<'list' | 'calendar'>('list');
 
   ngOnInit(): void {
-    this.apiService
-      .getEvents()
+    from(this.apiService.getEvents())
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
         next: (events) => {
