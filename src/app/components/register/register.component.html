@@ -35,6 +35,9 @@
         <mat-form-field appearance="fill" class="w-full">
           <mat-label>Numéro de téléphone</mat-label>
           <input matInput formControlName="phoneNumber" />
+          @if (registrationForm().get('phoneNumber')?.hasError('pattern')) {
+          <mat-error>Veuillez entrer un numéro de téléphone valide.</mat-error>
+          }
         </mat-form-field>
 
         @if (registrationForm().hasError('atLeastOne')) {

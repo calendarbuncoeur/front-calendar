@@ -16,7 +16,7 @@ export const routes: Routes = [
     component: RegisterComponent,
   },
   {
-    path: 'admin-page',
+    path: 'admin',
     loadComponent: () =>
       import('./components/admin-page/admin-page.component').then((m) => m.AdminPageComponent),
   },

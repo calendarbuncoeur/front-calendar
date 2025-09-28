@@ -40,7 +40,7 @@ export class RegisterComponent {
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', Validators.email],
-      phoneNumber: [''],
+      phoneNumber: ['', Validators.pattern('^(?:(?:\\+|00)33|0)\\s*[1-9](?:[\\s.-]*\\d{2}){4}$')],
     }, { validators: atLeastOne(['email', 'phoneNumber']) })
   );
   public message = signal<string>('');

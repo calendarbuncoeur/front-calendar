@@ -12,6 +12,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { EventDialogComponent } from '../event-dialog/event-dialog.component';
 import { MatIconModule } from '@angular/material/icon';
 import { Event, Registration } from '../../models/event.model';
+import { RouterModule } from '@angular/router';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 interface AdminViewRegistration extends Registration {
   id: number;
@@ -36,6 +38,8 @@ interface AdminViewEvent extends Omit<Event, 'registrations'> {
     MatProgressSpinnerModule,
     MatTableModule,
     MatIconModule,
+    RouterModule,
+    MatTooltipModule,
   ],
   templateUrl: './admin-page.component.html',
   styleUrls: ['./admin-page.component.scss'],
